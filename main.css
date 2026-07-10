@@ -11,11 +11,6 @@ body{
     color: rgb(204, 0, 0);
 }
 
-#button{
-    background-color: #fff;
-    color: rgb(204, 0, 0);
-}
-
 #cabecalho .nav .nav-link , .navbar-brand,
 .navbar-brand:hover, .nav-produtos .nav-link.active:hover {
     color: #fff;
@@ -62,12 +57,43 @@ body{
     text-decoration: none;
 }
 
-.cor-de-uva{
-    color: rgb(204, 0, 0);
+/* ============================================================
+   PADRONIZAÇÃO DE IMAGENS
+   Cada contexto tem uma proporção fixa; object-fit faz o
+   preenchimento correto sem esticar nem achatar as fotos.
+   ============================================================ */
+
+/* Carrossel de capa: faixa panorâmica 12:5 (proporção das
+   imagens da pasta Ajuste), cortando o excesso com cover */
+.carousel-item img {
+    width: 100%;
+    aspect-ratio: 12 / 5;
+    object-fit: cover;
 }
 
+/* Imagens das seções "Sobre": retângulo 16:9 uniforme */
+.img-secao {
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+}
+
+/* Fotos de produto: caixa quadrada 1:1 com o produto inteiro
+   visível (contain), fundo branco e moldura leve — padrão de
+   vitrine de e-commerce. Vasos altos e espadas deitadas passam
+   a ocupar caixas do mesmo tamanho. */
+.produto-img {
+    aspect-ratio: 1 / 1;
+    object-fit: contain;
+    background-color: #fff;
+    border: 1px solid #f0d8d2;
+    border-radius: 6px;
+    padding: 8px;
+}
+
+/* No celular o carrossel fica um pouco mais alto para
+   compensar a tela estreita */
 @media (max-width: 767px) {
     .carousel-item img {
-        height: 280px;
+        aspect-ratio: 16 / 10;
     }
 }
