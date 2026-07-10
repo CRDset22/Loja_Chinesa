@@ -1,0 +1,182 @@
+==================================================================
+RELATÓRIO DE REVISÃO - LOJA JEN DIAN (Loja Chinesa)
+Revisão de index.html, main.css e organização do projeto
+==================================================================
+
+
+------------------------------------------------------------------
+PARTE 1 - LINKS E SCRIPTS
+------------------------------------------------------------------
+
+[LNK-01] Script inexistente carregado do cdnjs
+  Antes: <script src="https://cdnjs.cloudflare.com/ajax/libs/
+         query-mask/1.0.1/query-mask.min.js"></script>
+  Problema: a biblioteca no cdnjs chama-se "jquery.mask", não
+            "query-mask" — esse endereço não entrega o plugin. E,
+            mesmo se entregasse, seria redundante: o projeto já
+            carrega o plugin localmente (jsQueryMask/).
+  Depois: script removido; a máscara continua funcionando pelo
+          arquivo local.
+
+[LNK-02] URLs "protocol-relative" quebravam ao abrir localmente
+  Antes: <script src="//code.jquery.com/jquery-1.11.0.min.js">
+  Problema: endereço começando com // herda o protocolo da página.
+            Abrindo o site com clique-duplo (protocolo file://), o
+            navegador procura "file://code.jquery.com/..." — que não
+            existe. Resultado: jQuery não carrega e a máscara de
+            telefone para de funcionar exatamente no cenário mais
+            comum de teste local.
+  Depois: https:// explícito.
+
+[LNK-03] jQuery 1.11 (2014) + jquery-migrate
+  Problema: versão de 2014, com vulnerabilidades conhecidas; o
+            jquery-migrate só existia para dar suporte a código
+            antigo, que este projeto não tem.
+  Depois: jQuery 3.7.1 (o jQuery Mask Plugin incluso é compatível)
+          e o migrate foi removido.
+
+[LNK-04] Scrollspy do Bootstrap apontando para alvo inválido
+  Antes: <div data-bs-spy="scroll" data-bs-target="cabecalho" ...>
+  Problema: faltou o "#". Sem ele o Bootstrap não encontra o
+            elemento e o menu não destaca a seção ativa ao rolar.
+  Depois: data-bs-target="#cabecalho"
+
+[LNK-05] Categoria inteira sem link: pasta Bule_chines órfã
+  Problema: a pasta tem 5 imagens de produtos e NENHUMA era usada
+            no site — a aba "Bules" nunca foi criada.
+  Depois: aba Bules adicionada (botão na navegação lateral +
+          painel com os 5 produtos), seguindo o padrão das outras.
+          Nomes, textos e preços são sugestões editáveis.
+
+
+------------------------------------------------------------------
+PARTE 2 - IMAGENS DESPROPORCIONAIS E PADRONIZAÇÃO
+------------------------------------------------------------------
+
+[IMG-01] Fotos de produto com proporções de 0,58 a 2,48
+  Problema: cada foto tinha um formato (vasos verticais 232x400,
+            espadas deitadas 791x319, pratos quadrados 564x564...).
+            Com class="w-100" e altura livre, cada card ficava de um
+            tamanho e a vitrine desalinhada.
+  Depois: classe .produto-img aplicada às 25 fotos de produto:
+              aspect-ratio: 1 / 1;      caixa sempre quadrada
+              object-fit: contain;      produto inteiro visível
+              fundo branco + borda leve padrão de vitrine
+          Obs.: foi usado "contain" (e não "cover") de propósito —
+          com cover, uma espada deitada perderia a lâmina no corte.
+
+[IMG-02] Carrossel de capa sem proporção definida
+  Antes: os slides dependiam do tamanho natural de cada foto, com
+         um max-height: 650px fixo em style inline; no celular
+         havia um height: 280px fixo que achatava as fotos.
+  Problema: altura fixa em px + largura fluida = distorção.
+  Depois: .carousel-item img { aspect-ratio: 12/5 (proporção real
+          das imagens da pasta Ajuste); object-fit: cover; } e no
+          celular a proporção muda para 16:10 em vez de esmagar em
+          280px. O style inline foi removido.
+
+[IMG-03] Slide do carrossel fugindo do padrão da pasta Ajuste
+  Antes: o 3º slide usava Nunchacus/1280px-Nunchaku.jpeg.
+  Problema: as capas ajustadas moram na pasta Ajuste — que
+            inclusive já tinha uma CÓPIA IDÊNTICA desse arquivo.
+            Imagem duplicada e organização inconsistente.
+  Depois: o slide aponta para Ajuste/1280px-Nunchaku.jpeg. A cópia
+          da pasta Nunchacus ficou como reserva (pode apagar).
+
+[IMG-04] Imagens das seções "Sobre" sem padrão
+  Antes: Fachada (1,86), One.png (2,22) e maxresdefault (1,78),
+         cada uma de uma proporção.
+  Depois: classe .img-secao com aspect-ratio 16:9 + cover nas três.
+
+[IMG-05] Gambiarra de <br><br><br> para alinhar card
+  Antes: no card "Wēi Fēng Zhī Rèn" havia três <br> seguidos para
+         empurrar o preço e alinhar com os vizinhos.
+  Problema: alinhamento na marra quebra em outras larguras de tela.
+  Depois: removidos — com as imagens padronizadas em 1:1, os cards
+          alinham naturalmente.
+
+
+------------------------------------------------------------------
+PARTE 3 - OUTROS ERROS ENCONTRADOS
+------------------------------------------------------------------
+
+[HTM-01] <title>Document</title>
+  Problema: título padrão do editor, aparece na aba do navegador.
+  Depois: "Loja JEN DIAN — Artigos Chineses".
+
+[HTM-02] Textos alternativos errados (copiados de outro projeto)
+  Antes: as 3 imagens das seções diziam alt="Foto do espaço interno
+         do restaurante" — mas o site é uma LOJA, não restaurante
+         (sobra de template de outro projeto).
+  Depois: alts corretos e específicos para cada imagem.
+
+[HTM-03] Campo "telefone (opcional)" marcado como obrigatório
+  Antes: <input type="tel" ... required>
+  Problema: o rótulo diz "(opcional)", mas o required impedia o
+            envio sem telefone — contradição direta.
+  Depois: required removido do telefone (nome, e-mail e mensagem
+          continuam obrigatórios).
+
+[HTM-04] Título "Observação" duplicado e vazio
+  Antes: havia dois <h4>Observação</h4>; o segundo não tinha
+         conteúdo nenhum antes do rodapé.
+  Depois: o duplicado foi removido.
+
+[HTM-05] Espaço duplo em "Seu  nome"
+  Depois: "Seu nome".
+
+[CSS-01] Regras mortas no main.css
+  Problema: #button e .cor-de-uva não correspondem a nenhum
+            elemento do HTML (código morto).
+  Depois: removidas.
+
+------------------------------------------------------------------
+PARTE 4 - ORGANIZAÇÃO DO PROJETO
+------------------------------------------------------------------
+
+[ORG-01] Repositório inteiro de plugin dentro do projeto
+  Problema: a pasta jQuery-Mask-Plugin-master/ trazia o repositório
+            completo do plugin (testes, Dockerfile, Gruntfile...) —
+            ~40 arquivos que o site não usa.
+  Depois: pasta removida; o site usa apenas
+          jsQueryMask/jquery.mask.min.js, que foi mantido.
+
+[ORG-02] Arquivos JS carregados por ninguém
+  Problema: jquery.validate.min.js e messages_pt_PT.min.js estavam
+            em jsQueryMask/ mas nenhum <script> os referenciava.
+  Depois: removidos do pacote (se um dia for validar o formulário
+          com o jQuery Validate, é só baixá-los de novo).
+
+[ORG-03] Pasta .git dentro do .rar
+  Observação: o histórico Git veio junto no arquivo. Ele foi
+          deixado FORA do zip entregue (o zip é só o site limpo).
+          Seu repositório original continua intacto onde estava.
+
+------------------------------------------------------------------
+RESUMO
+------------------------------------------------------------------
+Links/scripts corrigidos:      5
+Padronização de imagens:       5
+Outros erros de HTML/CSS:      6
+Organização do projeto:        3
+Total:                        19
+
+Lições principais:
+  1. Altura fixa em px + largura fluida = imagem distorcida.
+     Use aspect-ratio + object-fit (cover corta, contain mostra
+     tudo).
+  2. Em vitrine de produtos com formatos variados, contain em
+     caixa quadrada preserva o produto; cover serve para capas e
+     banners.
+  3. URLs começando com // quebram ao abrir o arquivo localmente;
+     prefira https:// explícito.
+  4. Confira o nome exato das bibliotecas em CDN — um typo carrega
+     nada, silenciosamente.
+  5. data-bs-target do Bootstrap sempre leva "#" quando aponta
+     para um id.
+  6. Não versione/embarque o repositório inteiro de um plugin:
+     só o arquivo dist que o site realmente usa.
+
+==================================================================
+Fim do relatório.
+==================================================================
